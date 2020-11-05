@@ -15,6 +15,8 @@ import java.util.*;
 /** Model exported on Nov 4 2020, 03:47 by COMSOL 5.5.0.359. */
 public class test_pro_lspr {
 
+  public static int log_cont = 0;
+
   public static Model run() {
     Model model = ModelUtil.create("Model");
 
@@ -407,7 +409,7 @@ public class test_pro_lspr {
     
       Troquei os valores dos parametros para obter novas soluções e recomputei as geometrias
 
-    */
+
 
     model.sol("sol1").study("std1");
 
@@ -468,17 +470,17 @@ public class test_pro_lspr {
 
     model.result("pg1").run();
 
-    /**
+
     
       Os últimos 55 comandos são causados ao computar novamente o modelo
 
-    */
+
 
 
     model.result().numerical("gev1").set("table", "tbl1");
     model.result().numerical("gev1").appendResult();
 
-    /**
+
     
       Atualizando a table 1
 
@@ -620,10 +622,10 @@ public class test_pro_lspr {
   public static void createLog(String info, String type){
 
     Random generator = new Random();
-    int logNumber = generator.nextInt(999999999);
+    int logNumber = ++log_cont;
     try{
       String label = "Custom_log_file_" + type + "_" + Integer.toString(logNumber) + ".txt";
-      FileWriter fw = new FileWriter(label);
+      FileWriter fw = new FileWriter("/home/gabriel/Documents/FotonicaFinal/logs/" + label);
       PrintWriter pw = new PrintWriter(fw);
       pw.println(info);
       pw.close();
@@ -636,25 +638,10 @@ public class test_pro_lspr {
 
   }
 
-  public static void saveNumber(double number, String label){
-
-    try{
-      FileWriter fw = new FileWriter(label);
-      PrintWriter pw = new PrintWriter(fw);
-      pw.println(Double.toString(number));
-      pw.close();
-
-    }catch(IOException e){
-      System.out.println("Faking Error");
-    }
-
-    System.out.println(Double.toString(number));
-  }
-
   public static double[] catchDataTable(Model model){
 
     int rows = 501;
-    int columns = 3 + get_count();
+    int columns = 2 + get_count();
 
     String[][] ArrayTemp = new String[rows][columns];
     double[][] table = new double[columns][rows];
@@ -663,7 +650,6 @@ public class test_pro_lspr {
 
     for (int i = 0; i < rows; i++){
       for (int j = 0; j < columns; j++){
-        //saveNumber(Double.parseDouble(ArrayTemp[i][j]), "myDATA.txt");
         table[j][i] = Double.parseDouble(ArrayTemp[i][j]);
       }
     }
@@ -689,17 +675,25 @@ public class test_pro_lspr {
       if (luck > 0.5){
         slicer = 3;
       }
-      for (int j = 0; j < 5; j++){
-        if (j < slicer){
-          nextGeneration[i][j] = crm1[j];
-        }else {
-          nextGeneration[i][j] = crm2[j];
+      luck = generator.nextDouble();
+      for (int j = 0; j < 4; j++){
+        if(luck < 0.5){
+          if (j < slicer){
+            nextGeneration[i][j] = crm1[j];
+          }else {
+            nextGeneration[i][j] = crm2[j];
+          }  
+        }else{
+          if (j < slicer){
+            nextGeneration[i][j] = crm2[j];
+          }else {
+            nextGeneration[i][j] = crm1[j];
+          }
         }
+        
       }
       luck = generator.nextDouble();
-      boolean mutated = false;
-      if (luck > 0.3) mutated = true;
-      if (mutated){
+      if (luck > 0.2){
         int position = generator.nextInt(5);
         int newValue;
         switch (position){
@@ -750,14 +744,36 @@ public class test_pro_lspr {
     return initial.clone();
   }
 
-  public static void geneticAlg(Model model){
-    int[] is1 = randomInit();
-    int[] is2 = randomInit();
+  public static void logGeneration(int[][] populaion, int genaration){
+    String src = "";
+    for(int i = 0; i < populaion.length; i ++){
+      src += "["+i+"]   [gap]  " + populaion[i][0] + "   | [gold_surf_wd]  " + populaion[i][1] + "   | [gold_surf_hg]  " + populaion[i][2] + "   | [surface]  " + populaion[i][3] + "   | [pedestal]  " + populaion[i][4] + "\n";
+    }
+    createLog(src, "GenerationData_" + genaration);
+  }
 
-    int[][] nextGeneration = permutations(is1, is2);
+  public static void logMaxs(double[] maxs, int genaration){
+    String src = "";
+    for(int i = 0; i < maxs.length; i ++){
+      src += "["+i+"]  " + maxs[i] + "\n";
+    }
+    createLog(src, "MaxData_" + genaration);
+  }
+
+  public static void geneticAlg(Model model){
+
+    int[][] nextGeneration = new int[10][5];
+    for(int i = 0; i < 10; i++){
+      nextGeneration[i] = randomInit();
+    }
+
     double[] maxValues = new double[10];
 
-    while(true){
+    int generation = 0;
+
+    for(int k = 0; k < 6; k++){
+      generation++;
+      logGeneration(nextGeneration, generation);
       for(int i = 0; i < 10; i++){
         changeParams(model, nextGeneration[i]);
         evaluateModel(model);
@@ -765,19 +781,29 @@ public class test_pro_lspr {
         double newMaxValue = handleLastMaxValue(model);
         maxValues[i] = newMaxValue;
       }
+      logMaxs(maxValues, generation);
 
-      for(int i = 0; i < 10; i++){
-        String label = "Last_population_" + i + ".txt";
-        saveNumber(maxValues[i], label);
+      int largest = 0;
+      int secondLargest = 0;
+      for ( int i = 1; i < maxValues.length; i++ ){
+        if ( maxValues[i] > maxValues[largest] ) largest = i;
       }
+      if(largest == 0) secondLargest = 1;
+      for ( int i = 0; i < maxValues.length; i++ ){
+        if ( (maxValues[i] > maxValues[secondLargest]) && i != largest ) secondLargest = i;
+      }
+
+      nextGeneration = permutations(nextGeneration[largest], nextGeneration[secondLargest]);
+      createLog("Mais uma geração, número " + generation, "GenerationCreated");
+
     }
   }
 
   public static void main(String[] args) {
-    System.out.println("comessado uma longa jornada");
-    int tst = 55;
+    createLog("Comessando uma longa jornada", "started");
     Model model = run();
-    //catchDataTable(model);
+    //geneticAlg(model);
+    
     int[] cobaia = randomInit();
     createLog("O valor de gap: " + cobaia[0], "info");
     createLog("O valor de gold_surf_wd: " + cobaia[1], "info");
@@ -789,7 +815,7 @@ public class test_pro_lspr {
     double newMaxValue = handleLastMaxValue(model);
     createLog("O fluxo principal funcionou!!!!", "evaluate");
     System.out.println(newMaxValue);
-    System.out.println(tst);
+    
   }
 
 }
