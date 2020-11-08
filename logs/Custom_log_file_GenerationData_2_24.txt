@@ -1,0 +1,11 @@
+[0]   [gap]  25   | [gold_surf_wd]  58   | [gold_surf_hg]  20   | [surface]  17   | [pedestal]  16
+[1]   [gap]  17   | [gold_surf_wd]  73   | [gold_surf_hg]  20   | [surface]  23   | [pedestal]  25
+[2]   [gap]  17   | [gold_surf_wd]  73   | [gold_surf_hg]  22   | [surface]  18   | [pedestal]  25
+[3]   [gap]  24   | [gold_surf_wd]  73   | [gold_surf_hg]  20   | [surface]  23   | [pedestal]  25
+[4]   [gap]  25   | [gold_surf_wd]  58   | [gold_surf_hg]  20   | [surface]  17   | [pedestal]  22
+[5]   [gap]  18   | [gold_surf_wd]  58   | [gold_surf_hg]  20   | [surface]  17   | [pedestal]  22
+[6]   [gap]  25   | [gold_surf_wd]  70   | [gold_surf_hg]  22   | [surface]  17   | [pedestal]  22
+[7]   [gap]  17   | [gold_surf_wd]  73   | [gold_surf_hg]  20   | [surface]  23   | [pedestal]  25
+[8]   [gap]  17   | [gold_surf_wd]  73   | [gold_surf_hg]  20   | [surface]  17   | [pedestal]  22
+[9]   [gap]  25   | [gold_surf_wd]  58   | [gold_surf_hg]  22   | [surface]  23   | [pedestal]  25
+

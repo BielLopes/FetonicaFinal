@@ -1,5 +1,5 @@
 /*
- * test_pro_lspr.java
+ * genetic_alg_plasmon.java
  */
 
 import com.comsol.model.*;
@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.util.*;
 
 /** Model exported on Nov 4 2020, 03:47 by COMSOL 5.5.0.359. */
-public class test_pro_lspr {
+public class genetic_alg_plasmon {
 
   public static int log_cont = 0;
 
@@ -405,88 +405,6 @@ public class test_pro_lspr {
 
     model.component("comp1").geom("geom1").run("fin");
 
-    /**
-    
-      Troquei os valores dos parametros para obter novas soluções e recomputei as geometrias
-
-
-
-    model.sol("sol1").study("std1");
-
-    model.study("std1").feature("wave").set("notlistsolnum", 1);
-    model.study("std1").feature("wave").set("notsolnum", "auto");
-    model.study("std1").feature("wave").set("listsolnum", 1);
-    model.study("std1").feature("wave").set("solnum", "auto");
-
-    model.sol("sol1").feature().remove("s1");
-    model.sol("sol1").feature().remove("v1");
-    model.sol("sol1").feature().remove("st1");
-    model.sol("sol1").create("st1", "StudyStep");
-    model.sol("sol1").feature("st1").set("study", "std1");
-    model.sol("sol1").feature("st1").set("studystep", "wave");
-    model.sol("sol1").create("v1", "Variables");
-    model.sol("sol1").feature("v1").set("control", "wave");
-    model.sol("sol1").create("s1", "Stationary");
-    model.sol("sol1").feature("s1").set("stol", 0.01);
-    model.sol("sol1").feature("s1").create("p1", "Parametric");
-    model.sol("sol1").feature("s1").feature().remove("pDef");
-    model.sol("sol1").feature("s1").feature("p1").set("pname", new String[]{"lambda0"});
-    model.sol("sol1").feature("s1").feature("p1").set("plistarr", new String[]{"lb"});
-    model.sol("sol1").feature("s1").feature("p1").set("punit", new String[]{"\u00b5m"});
-    model.sol("sol1").feature("s1").feature("p1").set("pcontinuationmode", "no");
-    model.sol("sol1").feature("s1").feature("p1").set("preusesol", "auto");
-    model.sol("sol1").feature("s1").feature("p1").set("pdistrib", "off");
-    model.sol("sol1").feature("s1").feature("p1").set("plot", "off");
-    model.sol("sol1").feature("s1").feature("p1").set("plotgroup", "pg1");
-    model.sol("sol1").feature("s1").feature("p1").set("probesel", "all");
-    model.sol("sol1").feature("s1").feature("p1").set("probes", new String[]{});
-    model.sol("sol1").feature("s1").feature("p1").set("control", "wave");
-    model.sol("sol1").feature("s1").set("control", "wave");
-    model.sol("sol1").feature("s1").feature("aDef").set("complexfun", true);
-    model.sol("sol1").feature("s1").create("fc1", "FullyCoupled");
-    model.sol("sol1").feature("s1").create("d1", "Direct");
-    model.sol("sol1").feature("s1").feature("d1").set("linsolver", "mumps");
-    model.sol("sol1").feature("s1").feature("d1").label("Suggested Direct Solver (ewfd)");
-    model.sol("sol1").feature("s1").feature("fc1").set("linsolver", "d1");
-    model.sol("sol1").feature("s1").feature().remove("fcDef");
-    model.sol("sol1").attach("std1");
-
-    model.batch("p1").feature().remove("so1");
-    model.batch("p1").create("so1", "Solutionseq");
-    model.batch("p1").feature("so1").set("seq", "sol1");
-    model.batch("p1").feature("so1").set("store", "on");
-    model.batch("p1").feature("so1").set("clear", "on");
-    model.batch("p1").feature("so1").set("psol", "sol2");
-    model.batch("p1").set("pname", new String[]{"lb"});
-    model.batch("p1").set("plistarr", new String[]{"range(400[nm],1[nm],900[nm])"});
-    model.batch("p1").set("sweeptype", "sparse");
-    model.batch("p1").set("probesel", "all");
-    model.batch("p1").set("probes", new String[]{});
-    model.batch("p1").set("plot", "off");
-    model.batch("p1").set("err", "on");
-    model.batch("p1").attach("std1");
-    model.batch("p1").set("control", "param");
-    model.batch("p1").run();
-
-    model.result("pg1").run();
-
-
-    
-      Os últimos 55 comandos são causados ao computar novamente o modelo
-
-
-
-
-    model.result().numerical("gev1").set("table", "tbl1");
-    model.result().numerical("gev1").appendResult();
-
-
-    
-      Atualizando a table 1
-
-    */
-
-
     return model;
   }
 
@@ -565,12 +483,19 @@ public class test_pro_lspr {
 
     model.result("pg1").run();
 
+    /*
+      Os últimos 55 comandos são causados ao computar novamente o modelo
+    */
+
 
     model.result().numerical("gev1").set("table", "tbl1");
     model.result().numerical("gev1").appendResult();
 
+    /*
+      Atualizando a table 1
+    */
+
     int value = count();
-    createLog("Consegui em tese rodar um array aleatório de número: " + value, "computed");
   }
 
   public static int count(){
@@ -654,8 +579,6 @@ public class test_pro_lspr {
       }
     }
 
-    createLog("Parece que deu certo dar load na tabela", "sucsess");
-
     return table[columns-1].clone();
   }
 
@@ -676,7 +599,7 @@ public class test_pro_lspr {
         slicer = 3;
       }
       luck = generator.nextDouble();
-      for (int j = 0; j < 4; j++){
+      for (int j = 0; j <= 4; j++){
         if(luck < 0.5){
           if (j < slicer){
             nextGeneration[i][j] = crm1[j];
@@ -766,15 +689,25 @@ public class test_pro_lspr {
     for(int i = 0; i < 10; i++){
       nextGeneration[i] = randomInit();
     }
+    int N_GENERATIONS = 8;
 
     double[] maxValues = new double[10];
 
     int generation = 0;
+    int largest = 0;
+    int secondLargest = 0;
 
-    for(int k = 0; k < 6; k++){
+    for(int k = 0; k < N_GENERATIONS; k++){
       generation++;
       logGeneration(nextGeneration, generation);
-      for(int i = 0; i < 10; i++){
+      int size = 8;
+      if(generation == 1){ 
+        size = 10;
+      } else{
+        maxValues[8] = maxValues[largest];
+        maxValues[9] = maxValues[secondLargest];
+      }
+      for(int i = 0; i < size; i++){
         changeParams(model, nextGeneration[i]);
         evaluateModel(model);
 
@@ -783,8 +716,6 @@ public class test_pro_lspr {
       }
       logMaxs(maxValues, generation);
 
-      int largest = 0;
-      int secondLargest = 0;
       for ( int i = 1; i < maxValues.length; i++ ){
         if ( maxValues[i] > maxValues[largest] ) largest = i;
       }
@@ -794,7 +725,6 @@ public class test_pro_lspr {
       }
 
       nextGeneration = permutations(nextGeneration[largest], nextGeneration[secondLargest]);
-      createLog("Mais uma geração, número " + generation, "GenerationCreated");
 
     }
   }
@@ -802,20 +732,7 @@ public class test_pro_lspr {
   public static void main(String[] args) {
     createLog("Comessando uma longa jornada", "started");
     Model model = run();
-    //geneticAlg(model);
-    
-    int[] cobaia = randomInit();
-    createLog("O valor de gap: " + cobaia[0], "info");
-    createLog("O valor de gold_surf_wd: " + cobaia[1], "info");
-    createLog("O valor de gold_surf_hg: " + cobaia[2], "info");
-    createLog("O valor de surface: " + cobaia[3], "info");
-    createLog("O valor de pedestal: " + cobaia[4], "info");
-    changeParams(model, cobaia);
-    evaluateModel(model);
-    double newMaxValue = handleLastMaxValue(model);
-    createLog("O fluxo principal funcionou!!!!", "evaluate");
-    System.out.println(newMaxValue);
-    
+    geneticAlg(model);
   }
 
 }
